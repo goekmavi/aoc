@@ -1,0 +1,1 @@
+This repository contains my solutions for the <a href="https://adventofcode.com/" target="_blank">Advent of Code 2023 & 2024</a> programming puzzles. 🧩
