@@ -188,10 +188,10 @@ func createRegion(current Plot, mapArr [][]Plot, currentPlots []Plot, last Plot)
 	return currentPlots
 }
 
-func calcSides(plots []Plot, mapArr [][]Plot) int {
-	//fmt.Println(plots)
-	return 0
-}
+// func calcSides(plots []Plot, mapArr [][]Plot) int {
+// 	//fmt.Println(plots)
+// 	return 0
+// }
 
 func totalPrice(mapArr [][]Plot) (int, int) {
 	regions := make([]Region, 0)
@@ -217,22 +217,22 @@ func totalPrice(mapArr [][]Plot) (int, int) {
 
 	sumA := 0
 	sumB := 0
-	edgeAll := [][]Plot{}
+	//edgeAll := [][]Plot{}
 
 	for _, region := range regions {
 		perimeter := 0
-		edgeArr := []Plot{}
+		//edgeArr := []Plot{}
 
 		for _, plots := range region.Plots {
 			_perimeter := calcPerimeter(plots.I, plots.J, mapArr)
 			perimeter += _perimeter
 
 			if _perimeter > 0 {
-				edgeArr = append(edgeArr, plots)
+				//edgeArr = append(edgeArr, plots)
 			}
 		}
 
-		edgeAll = append(edgeAll, edgeArr)
+		//edgeAll = append(edgeAll, edgeArr)
 		sumA += perimeter * len(region.Plots)
 	}
 
