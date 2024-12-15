@@ -16,7 +16,123 @@ type Robot struct {
 	VelY int
 }
 
-func move(posMap map[string][]Robot, space [][]int, seconds int) (map[string][]Robot, [][]int) {
+var regT = `#{21}` // just tried out until 21 (https://www.reddit.com/r/adventofcode/comments/1hebtjt/2024_day_14_part_2_i_see_every_ones_solutions/)
+var regTComp = regexp.MustCompile(regT)
+
+func checkTree(space [][]int) bool {
+	for _, v := range space {
+		str := ""
+		for _, _v := range v {
+			if _v == 0 {
+				str += "."
+			} else {
+				str += "#"
+			}
+		}
+
+		res := regTComp.FindString(str)
+
+		if res != "" {
+			print(space)
+
+			return true
+		}
+	}
+
+	return false
+}
+
+func print(space [][]int) {
+	for _, v := range space {
+		str := ""
+		for _, _v := range v {
+			if _v == 0 {
+				str += "."
+			} else {
+				str += "#"
+			}
+		}
+		fmt.Println(str)
+	}
+}
+
+func moveB(posMap map[string][]Robot, space [][]int) {
+	found := false
+	foundIndex := 0
+
+	for !found {
+		newPosMap := map[string][]Robot{}
+		_space := make([][]int, len(space))
+
+		for i := range space {
+			_space[i] = append([]int(nil), space[i]...)
+		}
+
+		found = checkTree(_space)
+
+		for key, robots := range posMap {
+			keyData := strings.Split(key, ":")
+			x, _ := strconv.Atoi(keyData[0])
+			y, _ := strconv.Atoi(keyData[1])
+
+			for _, robot := range robots {
+				velX := robot.VelX
+				velY := robot.VelY
+
+				newX := x + velX
+
+				if newX < 0 || newX >= len(_space[0]) {
+					newX = newX % len(_space[0])
+
+					if newX < 0 {
+						newX += len(_space[0])
+					}
+				}
+
+				newY := y + velY
+
+				if newY < 0 || newY >= len(_space) {
+					newY = newY % len(_space)
+
+					if newY < 0 {
+						newY += len(_space)
+					}
+				}
+
+				_newRobot := Robot{
+					PosX: newX,
+					PosY: newY,
+					VelX: velX,
+					VelY: velY,
+				}
+
+				_key := strconv.Itoa(newX) + ":" + strconv.Itoa(newY)
+
+				_, exists := newPosMap[_key]
+
+				if exists {
+					newPosMap[_key] = append(newPosMap[_key], _newRobot)
+				} else {
+					newPosMap[_key] = []Robot{
+						_newRobot,
+					}
+				}
+
+				_space[y][x]--
+				_space[newY][newX]++
+			}
+		}
+
+		space = _space
+		posMap = newPosMap
+
+		foundIndex++
+	}
+
+	fmt.Println("b)", foundIndex-1)
+}
+
+func moveA(posMap map[string][]Robot, space [][]int, seconds int) (map[string][]Robot, [][]int) {
 	for i := 0; i < seconds; i++ {
 		newPosMap := map[string][]Robot{}
 		_space := make([][]int, len(space))
@@ -141,7 +257,8 @@ func main() {
 		space[posY][posX] = len(posMap[_key])
 	}
 
-	_, _space := move(posMap, space, 100)
+	_, _spaceA := moveA(posMap, space, 100)
+	moveB(posMap, space)
 
 	q1 := 0
 	q2 := 0
@@ -156,28 +273,28 @@ func main() {
 
 			if i < tilesTall/2 {
 				if j < tilesWide/2 {
-					if _space[i][j] > 0 {
-						q1 += _space[i][j]
+					if _spaceA[i][j] > 0 {
+						q1 += _spaceA[i][j]
 					}
 				}
 
 				if l > tilesWide/2 {
-					if _space[i][l] > 0 {
-						q2 += _space[i][l]
+					if _spaceA[i][l] > 0 {
+						q2 += _spaceA[i][l]
 					}
 				}
 			}
 
 			if k > tilesTall/2 {
 				if j < tilesWide/2 {
-					if _space[k][j] > 0 {
-						q3 += _space[k][j]
+					if _spaceA[k][j] > 0 {
+						q3 += _spaceA[k][j]
 					}
 				}
 
 				if l > tilesWide/2 {
-					if _space[k][l] > 0 {
-						q4 += _space[k][l]
+					if _spaceA[k][l] > 0 {
+						q4 += _spaceA[k][l]
 					}
 				}
 			}
@@ -190,17 +307,5 @@ func main() {
 
 	mul := q1 * q2 * q3 * q4
 
-	fmt.Println(mul)
-
-	for _, v := range _space {
-		str := ""
-		for _, _v := range v {
-			if _v == 0 {
-				str += "."
-			} else {
-				str += "#"
-			}
-		}
-		fmt.Println(str)
-	}
+	fmt.Println("a)", mul)
 }
