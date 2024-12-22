@@ -294,7 +294,7 @@ func main() {
 		raceTrack[mustChangedI][mustChangedJ].IsWall = oldWall
 
 		for i, v := range raceTrack {
-			for j, _ := range v {
+			for j := range v {
 				raceTrack[i][j].Distance = math.MaxInt
 				raceTrack[i][j].PrevI = 0
 				raceTrack[i][j].PrevJ = 0
